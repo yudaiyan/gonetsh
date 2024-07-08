@@ -80,6 +80,14 @@ func (*FakeNetsh) EnableForwarding(iface string) error {
 	return nil
 }
 
+func (*FakeNetsh) SetIPAddress(iface string, address string) error {
+	return nil
+}
+
+func (*FakeNetsh) AddIPAddress(iface string, address string) error {
+	return nil
+}
+
 // Set the DNS server for interface
 func (*FakeNetsh) SetDNSServer(iface string, dns string) error {
 	return nil

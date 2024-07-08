@@ -2,6 +2,7 @@ package netsh
 
 import (
 	"fmt"
+	"net"
 	"regexp"
 	"strconv"
 	"strings"
@@ -32,6 +33,11 @@ type Interface interface {
 	GetInterfaceByName(name string) (Ipv4Interface, error)
 	// Gets an interface by ip address in the format a.b.c.d
 	GetInterfaceByIP(ipAddr string) (Ipv4Interface, error)
+	// 设置静态ip, 会替换当前网卡的静态ip
+	// ip 格式 10.0.0.2/24
+	SetIPAddress(iface string, address string) error
+	// 添加ip
+	AddIPAddress(iface string, address string) error
 	// Enable forwarding on the interface (name or index)
 	EnableForwarding(iface string) error
 	// Set the DNS server for interface
@@ -344,6 +350,38 @@ func (runner *runner) SetDNSServer(iface string, dns string) error {
 		return fmt.Errorf("failed to set dns on [%v], error: %v. cmd: %v. stdout: %v", iface, err.Error(), cmd, string(stdout))
 	}
 
+	return nil
+}
+
+func (runner *runner) SetIPAddress(iface string, address string) error {
+	ip, ipnet, _ := net.ParseCIDR(address)
+	ipAddress := ip.String()
+	subnetMask := net.IP(ipnet.Mask).String()
+
+	args := []string{
+		"int", "ipv4", "add", "address", strconv.Quote(iface), "static", ipAddress, subnetMask,
+	}
+	cmd := strings.Join(args, " ")
+	fmt.Printf("exec cmd: %s %s\n", cmdNetsh, cmd)
+	if stdout, err := runner.exec.Command(cmdNetsh, args...).CombinedOutput(); err != nil {
+		return fmt.Errorf("failed to set ip on [%v], error: %v. cmd: %v. stdout: %v", iface, err.Error(), cmd, string(stdout))
+	}
+	return nil
+}
+
+func (runner *runner) AddIPAddress(iface string, address string) error {
+	ip, ipnet, _ := net.ParseCIDR(address)
+	ipAddress := ip.String()
+	subnetMask := net.IP(ipnet.Mask).String()
+
+	args := []string{
+		"int", "ipv4", "add", "address", strconv.Quote(iface), ipAddress, subnetMask,
+	}
+	cmd := strings.Join(args, " ")
+	fmt.Printf("exec cmd: %s %s\n", cmdNetsh, cmd)
+	if stdout, err := runner.exec.Command(cmdNetsh, args...).CombinedOutput(); err != nil {
+		return fmt.Errorf("failed to set ip on [%v], error: %v. cmd: %v. stdout: %v", iface, err.Error(), cmd, string(stdout))
+	}
 	return nil
 }
 
