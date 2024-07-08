@@ -209,3 +209,29 @@ func TestGetInterfaceNameToIndexMap(t *testing.T) {
 	assert.Equal(t, 9, idxMap["Ethernet"])
 	assert.Equal(t, 14, idxMap["vEthernet (HNS Internal NIC)"])
 }
+
+func Test_runner_SetIPAddress(t *testing.T) {
+	type args struct {
+		iface   string
+		address string
+	}
+	tests := []struct {
+		name    string
+		runner  *runner
+		args    args
+		wantErr bool
+	}{
+		{
+			name:   "test1",
+			runner: New(exec.New()).(*runner),
+			args:   args{iface: "本地连接", address: "10.0.0.55/24"},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if err := tt.runner.SetIPAddress(tt.args.iface, tt.args.address); (err != nil) != tt.wantErr {
+				t.Errorf("runner.SetIPAddress() error = %v, wantErr %v", err, tt.wantErr)
+			}
+		})
+	}
+}

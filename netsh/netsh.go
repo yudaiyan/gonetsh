@@ -359,14 +359,13 @@ func (runner *runner) SetIPAddress(iface string, address string) error {
 	subnetMask := net.IP(ipnet.Mask).String()
 
 	args := []string{
-		"int", "ipv4", "add", "address", strconv.Quote(iface), "static", ipAddress, subnetMask,
+		"int", "ipv4", "set", "address", strconv.Quote(iface), "static", ipAddress, subnetMask,
 	}
 	cmd := strings.Join(args, " ")
 	fmt.Printf("exec cmd: %s %s\n", cmdNetsh, cmd)
 	if stdout, err := runner.exec.Command(cmdNetsh, args...).CombinedOutput(); err != nil {
-		return fmt.Errorf("failed to set ip on [%v], error: %v. cmd: %v. stdout: %v", iface, err.Error(), cmd, string(stdout))
+		return fmt.Errorf("failed to set ip on [%v], error: %v. cmd: %v. stdout: %v", iface, err.Error(), cmd, GB2312toUTF8(string(stdout[:])))
 	} else {
-		fmt.Println(GB2312toUTF8(string(stdout[:])))
 		return nil
 	}
 }
