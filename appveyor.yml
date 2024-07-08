@@ -6,7 +6,7 @@ branches:
   only:
     - master
 
-clone_folder: c:\gopath\src\github.com\rakelkar\gonetsh
+clone_folder: c:\gopath\src\github.com\yudaiyan\gonetsh
 
 environment:
   GOPATH: c:\gopath

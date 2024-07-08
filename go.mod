@@ -1,4 +1,4 @@
-module github.com/rakelkar/gonetsh
+module github.com/yudaiyan/gonetsh
 
 go 1.15
 
