@@ -365,8 +365,10 @@ func (runner *runner) SetIPAddress(iface string, address string) error {
 	fmt.Printf("exec cmd: %s %s\n", cmdNetsh, cmd)
 	if stdout, err := runner.exec.Command(cmdNetsh, args...).CombinedOutput(); err != nil {
 		return fmt.Errorf("failed to set ip on [%v], error: %v. cmd: %v. stdout: %v", iface, err.Error(), cmd, string(stdout))
+	} else {
+		fmt.Println(GB2312toUTF8(string(stdout[:])))
+		return nil
 	}
-	return nil
 }
 
 func (runner *runner) AddIPAddress(iface string, address string) error {
@@ -381,8 +383,10 @@ func (runner *runner) AddIPAddress(iface string, address string) error {
 	fmt.Printf("exec cmd: %s %s\n", cmdNetsh, cmd)
 	if stdout, err := runner.exec.Command(cmdNetsh, args...).CombinedOutput(); err != nil {
 		return fmt.Errorf("failed to set ip on [%v], error: %v. cmd: %v. stdout: %v", iface, err.Error(), cmd, string(stdout))
+	} else {
+		fmt.Println(GB2312toUTF8(string(stdout[:])))
+		return nil
 	}
-	return nil
 }
 
 // Restore is part of Interface.
