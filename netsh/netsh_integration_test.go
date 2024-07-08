@@ -1,4 +1,4 @@
-// +build integration
+//go:build integration
 
 package netsh
 
@@ -18,7 +18,7 @@ func TestGetInterfaces(t *testing.T) {
 
 func TestGetInterfaceByName(t *testing.T) {
 	h := New(exec.New())
-	netInterface, err := h.GetInterfaceByName("Ethernet")
+	netInterface, err := h.GetInterfaceByName("以太网")
 	assert.NoError(t, err)
 	t.Logf("%+v", netInterface)
 }

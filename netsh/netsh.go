@@ -8,6 +8,8 @@ import (
 
 	"errors"
 
+	"golang.org/x/text/encoding/simplifiedchinese"
+	"golang.org/x/text/transform"
 	utilexec "k8s.io/utils/exec"
 )
 
@@ -98,6 +100,12 @@ func (runner *runner) GetInterfaces() ([]Ipv4Interface, error) {
 	return interfaces, nil
 }
 
+func GB2312toUTF8(gb2312Str string) string {
+	decoder := simplifiedchinese.GB18030.NewDecoder()
+	utf8Data, _, _ := transform.Bytes(decoder, []byte(gb2312Str))
+	return string(utf8Data)
+}
+
 // GetInterfaces uses the show addresses command and returns a formatted structure
 func (runner *runner) getIpAddressConfigurations() ([]Ipv4Interface, error) {
 	args := []string{
@@ -108,24 +116,19 @@ func (runner *runner) getIpAddressConfigurations() ([]Ipv4Interface, error) {
 	if err != nil {
 		return nil, err
 	}
-	interfacesString := string(output[:])
+	interfacesString := GB2312toUTF8(string(output[:]))
+	outputLines := strings.Split(interfacesString, "\r\n")
 
-	outputLines := strings.Split(interfacesString, "\n")
 	var interfaces []Ipv4Interface
 	var currentInterface Ipv4Interface
-	quotedPattern := regexp.MustCompile("\\\"(.*?)\\\"")
+	quotedPattern := regexp.MustCompile(`接口 "(.+)" 的配置`)
 	cidrPattern := regexp.MustCompile(`\/(.*?)\ `)
 
-	if err != nil {
-		return nil, err
-	}
-
 	for _, outputLine := range outputLines {
-		if strings.Contains(outputLine, "Configuration for interface") {
+		if match := quotedPattern.FindStringSubmatch(outputLine); len(match) > 0 {
 			if currentInterface != (Ipv4Interface{}) {
 				interfaces = append(interfaces, currentInterface)
 			}
-			match := quotedPattern.FindStringSubmatch(outputLine)
 			currentInterface = Ipv4Interface{
 				Name: match[1],
 			}
@@ -136,28 +139,28 @@ func (runner *runner) getIpAddressConfigurations() ([]Ipv4Interface, error) {
 			}
 			key := strings.TrimSpace(parts[0])
 			value := strings.TrimSpace(parts[1])
-			if strings.HasPrefix(key, "DHCP enabled") {
-				if value == "Yes" {
+			if strings.HasPrefix(key, "DHCP 已启用") {
+				if value == "是" {
 					currentInterface.DhcpEnabled = true
 				}
 			} else if strings.HasPrefix(key, "InterfaceMetric") {
 				if val, err := strconv.Atoi(value); err == nil {
 					currentInterface.InterfaceMetric = val
 				}
-			} else if strings.HasPrefix(key, "Gateway Metric") {
+			} else if strings.HasPrefix(key, "网关跃点数") {
 				if val, err := strconv.Atoi(value); err == nil {
 					currentInterface.GatewayMetric = val
 				}
-			} else if strings.HasPrefix(key, "Subnet Prefix") {
+			} else if strings.HasPrefix(key, "子网前缀") {
 				match := cidrPattern.FindStringSubmatch(value)
 				if val, err := strconv.Atoi(match[1]); err == nil {
 					currentInterface.SubnetPrefix = val
 				}
-			} else if strings.HasPrefix(key, "IP Address") {
+			} else if strings.HasPrefix(key, "IP 地址") {
 				currentInterface.IpAddress = value
-			} else if strings.HasPrefix(key, "Default Gateway") {
+			} else if strings.HasPrefix(key, "默认网关") {
 				currentInterface.DefaultGatewayAddress = value
-			} else if strings.HasPrefix(key, "Statically Configured DNS Servers") {
+			} else if strings.HasPrefix(key, "通过 DHCP 配置的 DNS 服务器") {
 				currentInterface.DNS = value
 			}
 		}
@@ -187,9 +190,9 @@ func (runner *runner) getNetworkInterfaceParameters() (map[string]int, error) {
 	}
 
 	// Split output by line
-	outputString := string(output[:])
+	outputString := GB2312toUTF8(string(output[:]))
 	outputString = strings.TrimSpace(outputString)
-	var outputLines = strings.Split(outputString, "\n")
+	var outputLines = strings.Split(outputString, "\r\n")
 
 	if len(outputLines) < 3 {
 		return nil, errors.New("unexpected netsh output:\n" + outputString)

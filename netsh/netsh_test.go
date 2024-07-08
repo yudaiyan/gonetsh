@@ -25,27 +25,81 @@ func TestGetInterfacesGoldenPath(t *testing.T) {
 			func() ([]byte, []byte, error) {
 				return []byte(`
 
-Configuration for interface "Ethernet"
-    DHCP enabled:                         Yes
-    InterfaceMetric:                      5
-
-Configuration for interface "Local Area Connection* 1"
-    DHCP enabled:                         Yes
+接口 "本地连接" 的配置
+    DHCP 已启用:                          否
     InterfaceMetric:                      25
+    静态配置的 DNS 服务器:            无
+    用哪个前缀注册:                   只是主要
+    静态配置的 WINS 服务器:           无
 
-Configuration for interface "Wi-Fi"
-    DHCP enabled:                         Yes
-    IP Address:                           10.88.48.68
-    Subnet Prefix:                        10.88.48.0/22 (mask 255.255.252.0)
-    Default Gateway:                      10.88.48.1
-    Gateway Metric:                       0
+接口 "WLAN" 的配置
+    DHCP 已启用:                          是
+    InterfaceMetric:                      25
+    通过 DHCP 配置的 DNS 服务器:      192.168.1.1
+                                          192.168.1.1
+    用哪个前缀注册:                   只是主要
+    通过 DHCP 配置的 WINS 服务器:     无
+
+接口 "本地连接* 1" 的配置
+    DHCP 已启用:                          是
+    InterfaceMetric:                      25
+    通过 DHCP 配置的 DNS 服务器:      无
+    用哪个前缀注册:                   只是主要
+    通过 DHCP 配置的 WINS 服务器:     无
+
+接口 "本地连接* 2" 的配置
+    DHCP 已启用:                          是
+    InterfaceMetric:                      25
+    通过 DHCP 配置的 DNS 服务器:      无
+    用哪个前缀注册:                   只是主要
+    通过 DHCP 配置的 WINS 服务器:     无
+
+接口 "以太网" 的配置
+    DHCP 已启用:                          是
+    IP 地址:                           172.17.15.217
+    子网前缀:                        172.17.15.0/24 (掩码 255.255.255.0)
+    默认网关:                         172.17.15.12
+    网关跃点数:                       0
     InterfaceMetric:                      35
+    通过 DHCP 配置的 DNS 服务器:      61.139.2.69
+                                          218.6.200.139
+                                          114.114.114.114
+    用哪个前缀注册:                   只是主要
+    通过 DHCP 配置的 WINS 服务器:     无
 
-Configuration for interface "Loopback Pseudo-Interface 1"
-    DHCP enabled:                         No
-    IP Address:                           127.0.0.1
-    Subnet Prefix:                        127.0.0.0/8 (mask 255.0.0.0)
+接口 "蓝牙网络连接" 的配置
+    DHCP 已启用:                          是
+    InterfaceMetric:                      65
+    通过 DHCP 配置的 DNS 服务器:      无
+    用哪个前缀注册:                   只是主要
+    通过 DHCP 配置的 WINS 服务器:     无
+
+接口 "Loopback Pseudo-Interface 1" 的配置
+    DHCP 已启用:                          否
+    IP 地址:                           127.0.0.1
+    子网前缀:                        127.0.0.0/8 (掩码 255.0.0.0)
     InterfaceMetric:                      75
+    静态配置的 DNS 服务器:            无
+    用哪个前缀注册:                   只是主要
+    静态配置的 WINS 服务器:           无
+
+接口 "vEthernet (Default Switch)" 的配置
+    DHCP 已启用:                          否
+    IP 地址:                           172.31.0.1
+    子网前缀:                        172.31.0.0/20 (掩码 255.255.240.0)
+    InterfaceMetric:                      5000
+    静态配置的 DNS 服务器:            无
+    用哪个前缀注册:                   无
+    静态配置的 WINS 服务器:           无
+
+接口 "vEthernet (WSL (Hyper-V firewall))" 的配置
+    DHCP 已启用:                          否
+    IP 地址:                           172.26.64.1
+    子网前缀:                        172.26.64.0/20 (掩码 255.255.240.0)
+    InterfaceMetric:                      5000
+    静态配置的 DNS 服务器:            无
+    用哪个前缀注册:                   无
+    静态配置的 WINS 服务器:           无
 
 	`), nil, nil
 			},
